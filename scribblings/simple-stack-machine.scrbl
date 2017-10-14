@@ -204,7 +204,7 @@ Loads the memory cell pointed to by the top value onto the stack.
  store
 }
 
-Stores the value on top of the stack to the memory cell pointed to by the second value of the stack.
+Stores the second value of the stack to the memory cell pointed to by the top value of the stack.
 
 
 @subsubsection{Arithmetic and Logic}
@@ -274,3 +274,10 @@ Jumps to the location pointed to by the label, iff the top value represents a va
 
 Jumps to the location pointed to by the label, iff the top value represents a value of false (0).
 
+@subsubsection{Misc.}
+
+@codeblock[#:keep-lang-line? #f]{#lang ssm
+ halt
+}
+
+Stops the virtual machine.

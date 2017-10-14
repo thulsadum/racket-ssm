@@ -1,0 +1,25 @@
+#lang ssm
+SEG CODE
+  push 0
+  push '\n'
+  push '!'
+  push 'd'
+  push 'l'
+  push 'r'
+  push 'o'
+  push 'W'
+  push ' '
+  push 'o'
+  push 'l'
+  dup
+  push 'e'
+  push 'H'
+
+loop
+  dup
+  unless end
+  putc
+  jump loop
+
+end
+  halt

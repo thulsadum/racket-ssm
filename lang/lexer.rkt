@@ -26,13 +26,28 @@
 (define-empty-tokens arithmetic-code-ops (ADD SUB MUL DIV MOD))
 (define-empty-tokens logic-code-ops (AND OR XOR NOT GT GE EQ LE LT))
 (define-empty-tokens branching-code-ops (JUMP CALL RETURN WHEN UNLESS))
-(define-empty-tokens io-code-ops (PUTC PUTI PUTS GETC))
-(define-tokens literals (LABEL NUMBER))
+(define-empty-tokens io-code-ops (PUTC PUTI PUTS GETC HALT))
+(define-tokens literals (LABEL NUMBER STRING))
 
 
 (module+ test
+  ; check tokens
   (check-equal? (tn "SEG DATA\nSEG TEXT\nSEG CODE\n")
-                '(SEG-DATA SEG-TEXT SEG-CODE)))
+                '(SEG-DATA SEG-TEXT SEG-CODE))
+  (check-equal? (tn "equ res")
+                '(EQU RES))
+  (check-equal? (tn "push drop swap dup rot")
+                '(PUSH DROP SWAP DUP ROT))
+  (check-equal? (tn "load store")
+                '(LOAD STORE))
+  (check-equal? (tn "add sub mul div mod")
+                '(ADD SUB MUL DIV MOD))
+  (check-equal? (tn "and or xor not gt ge eq le lt")
+                '(AND OR XOR NOT GT GE EQ LE LT))
+  (check-equal? (tn "jump call return when unless")
+                '(JUMP CALL RETURN WHEN UNLESS))
+  (check-equal? (tn "putc puti puts getc")
+                '(PUTC PUTI PUTS GETC)))
 
 (module+ test
   ; ignore comments and whitespaces
@@ -43,10 +58,27 @@
 
 (module+ test
   ; literals and labels
-  (check-equal? (t "42 .loop-label")
+  (check-equal? (t "42 .loop-label \"Hello\" \"Say \\\"What?\\\"\" ")
                 '((NUMBER . 42)
-                  (LABEL . ".loop-label"))))
+                  (LABEL . ".loop-label")
+                  (STRING . "Hello")
+                  (STRING . "Say \"What?\""))))
 
+
+(module+ test
+  ; hello world with string
+  (check-equal? (tn (string-append "SEG DATA\n"
+                                   "msg \"Hello World!\"\n"
+                                   "SEG CODE\n"
+                                   "push msg\n"
+                                   "puts\n"
+                                   "halt\n"))
+                '(SEG-DATA
+                  LABEL STRING
+                  SEG-CODE
+                  PUSH LABEL
+                  PUTS
+                  HALT)))
 
 (define-lex-abbrev identifier (:: (:or alphabetic punctuation)
                                   (:* (:or alphabetic numeric punctuation))))
@@ -96,15 +128,23 @@
    ["puti" (token-PUTI)]
    ["puts" (token-PUTS)]
    ["getc" (token-GETC)]
+   ["halt" (token-HALT)]
    ;; TODO add hex/oct/bin representation of numbers?
    [(:+ numeric) (token-NUMBER (read (open-input-string lexeme)))]
    ["'\\t'" (token-NUMBER 9)]
    ["'\\n'" (token-NUMBER 10)]
    ["'\\f'" (token-NUMBER 12)]
    ["'\\r'" (token-NUMBER 13)]
-   [(from/to #\' #\') (token-NUMBER (char->integer (string-ref lexeme 1)))]
+   [(from/to #\' #\') (token-NUMBER
+                       (char->integer
+                        (string-ref lexeme 1)))]
+   [(from/to #\" (:: (:~ #\\) #\"))
+    (token-STRING
+     (string-replace (trim-ends "\"" lexeme "\"")
+                     "\\\"" "\""))]
    [identifier (token-LABEL lexeme)]))
 
 (define (make-tokenizer in)
   (port-count-lines! in)
   (λ () (ssm-lexer in)))
+(provide make-tokenizer)

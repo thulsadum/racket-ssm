@@ -1,0 +1,10 @@
+#lang ssm
+SEG TEXT
+  msg "Hello World!"
+
+SEG CODE
+  push msg
+  puts
+  push '\n'
+  putc
+  halt

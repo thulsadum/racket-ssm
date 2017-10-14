@@ -1,0 +1,44 @@
+#lang ssm
+;; indefinitely prints the fibonacci sequence
+SEG DATA
+  n  equ 0
+  f1 equ 0
+  f2 equ 1
+
+SEG CODE
+        jump main
+
+output  push n
+        load
+        puti
+        push caption
+        puts
+        push f1
+        load
+        puti
+        push '\n'
+        putc
+        return
+
+main    call output
+        push f2 ; [ @f2 ]
+        load    ; [ f2 ]
+        dup     ; [ f2 ; f2 ]
+        push f1 
+        load    ; [ f1 ; f2 ; f2 ]
+        add     ; [ f1+f2 ; f2 ]
+        push f2 
+        store   ; f2 := f1 + f2  [ f2 ]
+        push f1
+        store   ; f1 := f2' (old value)  [ ]
+        ; increment n
+        push 1  ; [ 1 ]
+        push n
+        load    ; [ n ; 1 ]
+        add     ; [ n+1 ]
+        push n
+        store   ; n := n+1   [ ]
+        jump main
+
+SEG TEXT
+  caption "-th fibonacci number is "
