@@ -1,6 +1,9 @@
 #lang info
 (define collection "ssm")
-(define deps '("base"
+(define deps '("beautiful-racket-lib"
+               "br-parser-tools-lib"
+               "brag"
+               "base"
                "rackunit-lib"))
 (define build-deps '("scribble-lib" "racket-doc"))
 (define scribblings '(("scribblings/simple-stack-machine.scrbl" (multi-page))))
