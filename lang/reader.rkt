@@ -14,7 +14,7 @@
     (define (handle-query key default)
       (case key
         [(color-lexer) (dynamic-require 'ssm/lang/colorer 'color-ssm)]
-        ; [(drracket:indentation) (dynamic-require "indenter.rkt" 'indent-ssm)]
+        [(drracket:indentation) (dynamic-require 'ssm/lang/indenter 'indent-ssm)]
         ; [(drracket:toolbar-buttons) ···]
         [else default]))
     handle-query)
